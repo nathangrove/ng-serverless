@@ -1,0 +1,29 @@
+{
+  "name": "ng-serverless",
+  "version": "0.1.0",
+  "repository": {
+    "type": "git",
+    "url": "https://git.nathangrove.com/njgcm7/ng-serverless.git"
+  },
+  "author": {
+    "name": "Nathan Grove",
+    "email": "nathan@nathangrove.com"
+  },
+  "keywords": [
+    "angular"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://git.nathangrove.com/njgcm7/ng-serverless.git/issues"
+  },
+  "module": "ng-serverless.js",
+  "typings": "ng-serverless.d.ts",
+  "peerDependencies": {
+    "@angular/core": "^4.0.0",
+    "rxjs": "^5.1.0",
+    "zone.js": "^0.8.4"
+  },
+  "dependencies": {
+    "crypto": "0.0.3"
+  }
+}
