@@ -16,9 +16,6 @@ var crypto = require('crypto');
 
 var serverlessPath = path.resolve('./src/serverless');
 
-// TODO: Remove this
-serverlessPath = '/home/ngrove/code/serverless/demo/src/serverless/';
-
 var rootPath = `${serverlessPath}/root/`;
 
 var configPath = `${serverlessPath}/serverless.js`;
