@@ -14,30 +14,60 @@ export class ServerlessService extends Http {
     }
 
     request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
-        console.log('Got request',url.url)
-        let call = ServerlessConfig.calls[url.url];
+        let uri = url.url.split("?")[0];
+        let query = url.url.split("?")[1];
+        let call = ServerlessConfig.calls[uri];
         if (call){
-            console.log(`Recieved serverless request. Making the request to ${ServerlessConfig.platform}`);
-            return super.post(ServerlessConfig.platform+'/run',{code: call});
+            return super.post(`${ServerlessConfig.platform}/run?${query}`,{code: call});
         } else {
             return super.request(url, options);
         }
     }
 
     get(url: string, options?: RequestOptionsArgs): Observable<Response> {
-        return super.get(url, this.getRequestOptionArgs(options));
+        let uri = url.url.split("?")[0];
+        let query = url.url.split("?")[1];
+        let call = ServerlessConfig.calls[uri];
+        if (call){
+            return super.post(`${ServerlessConfig.platform}/run?${query}`,{code: call});
+        } else {
+            return super.get(url, this.getRequestOptionArgs(options));
+        }
     }
 
     post(url: string, body: string, options?: RequestOptionsArgs): Observable<Response> {
-        return super.post(url, body, this.getRequestOptionArgs(options));
+        let uri = url.url.split("?")[0];
+        let query = url.url.split("?")[1];
+        let call = ServerlessConfig.calls[uri];
+        if (call){
+            body.code = call;
+            return super.post(`${ServerlessConfig.platform}/run?${query}`,{code: call});
+        } else {
+            return super.post(url, body, this.getRequestOptionArgs(options));
+        }
     }
 
     put(url: string, body: string, options?: RequestOptionsArgs): Observable<Response> {
-        return super.put(url, body, this.getRequestOptionArgs(options));
+        let uri = url.url.split("?")[0];
+        let query = url.url.split("?")[1];
+        let call = ServerlessConfig.calls[uri];
+        if (call){
+            body.code = call;
+            return super.post(`${ServerlessConfig.platform}/run?${query}`,{code: call});
+        } else {
+            return super.put(url, body, this.getRequestOptionArgs(options));
+        }
     }
 
     delete(url: string, options?: RequestOptionsArgs): Observable<Response> {
-        return super.delete(url, this.getRequestOptionArgs(options));
+        let uri = url.url.split("?")[0];
+        let query = url.url.split("?")[1];
+        let call = ServerlessConfig.calls[uri];
+        if (call){
+            return super.post(`${ServerlessConfig.platform}/run?${query}`,{code: call});
+        } else {
+            return super.delete(url, this.getRequestOptionArgs(options));
+        }
     }
 
     private getRequestOptionArgs(options?: RequestOptionsArgs) : RequestOptionsArgs {

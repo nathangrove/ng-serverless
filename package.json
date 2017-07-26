@@ -1,6 +1,6 @@
 {
   "name": "ng-serverless",
-  "version": "0.1.0",
+  "version": "1.0.0",
   "repository": {
     "type": "git",
     "url": "https://git.nathangrove.com/njgcm7/ng-serverless.git"
@@ -24,6 +24,9 @@
     "zone.js": "^0.8.4"
   },
   "dependencies": {
-    "crypto": "0.0.3"
+    "crypto": "0.0.3",
+    "fs": "0.0.1-security",
+    "path": "^0.12.7",
+    "request": "^2.81.0"
   }
 }
