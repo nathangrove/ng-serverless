@@ -128,7 +128,16 @@ walk(rootPath, function(err, files) {
 
         if (err) {
           console.error("Error creating calls:",err);
-          process.exit(1);
+          completedCalls++;
+          if (files.length == completedCalls) writeConfig();
+          return;
+        } else if (!c.signature){
+          console.error(`Error creating call "${call.name}": ${JSON.stringify(c)}`);
+          completedCalls++;
+          if (files.length == completedCalls) writeConfig();
+          return;
+        } else {
+          console.log(c);
         }
 
         delete call.code;

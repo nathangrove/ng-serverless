@@ -10,12 +10,11 @@ export class ServerlessService extends Http {
         public defaultOptions: RequestOptions
     ) {
         super(backend, defaultOptions);
-        console.log("HTTP Interceptor init with config:",ServerlessConfig);
     }
 
-    request(url: string | Request, options?: RequestOptionsArgs): Observable<Response> {
-        let uri = url.url.split("?")[0];
-        let query = url.url.split("?")[1];
+    request(url: any, options?: RequestOptionsArgs): Observable<Response> {
+        let uri = url.url ? url.url.split("?")[0] : url.split("?")[0];
+        let query = url.url ? url.url.split("?")[1] : url.split("?")[1];
         let call = ServerlessConfig.calls[uri];
         if (call){
             return super.post(`${ServerlessConfig.platform}/run?${query}`,{code: call});
@@ -25,8 +24,8 @@ export class ServerlessService extends Http {
     }
 
     get(url: string, options?: RequestOptionsArgs): Observable<Response> {
-        let uri = url.url.split("?")[0];
-        let query = url.url.split("?")[1];
+        let uri = url.split("?")[0];
+        let query = url.split("?")[1];
         let call = ServerlessConfig.calls[uri];
         if (call){
             return super.post(`${ServerlessConfig.platform}/run?${query}`,{code: call});
@@ -36,11 +35,12 @@ export class ServerlessService extends Http {
     }
 
     post(url: string, body: string, options?: RequestOptionsArgs): Observable<Response> {
-        let uri = url.url.split("?")[0];
-        let query = url.url.split("?")[1];
+        let uri = url.split("?")[0];
+        let query = url.split("?")[1];
         let call = ServerlessConfig.calls[uri];
         if (call){
-            body.code = call;
+            if (typeof body == 'string' && JSON.parse(body)) body = JSON.parse(body);
+            (<any>body).code = call;
             return super.post(`${ServerlessConfig.platform}/run?${query}`,{code: call});
         } else {
             return super.post(url, body, this.getRequestOptionArgs(options));
@@ -48,11 +48,12 @@ export class ServerlessService extends Http {
     }
 
     put(url: string, body: string, options?: RequestOptionsArgs): Observable<Response> {
-        let uri = url.url.split("?")[0];
-        let query = url.url.split("?")[1];
+        let uri = url.split("?")[0];
+        let query = url.split("?")[1];
         let call = ServerlessConfig.calls[uri];
         if (call){
-            body.code = call;
+            if (typeof body == 'string' && JSON.parse(body)) body = JSON.parse(body);
+            (<any>body).code = call;
             return super.post(`${ServerlessConfig.platform}/run?${query}`,{code: call});
         } else {
             return super.put(url, body, this.getRequestOptionArgs(options));
@@ -60,8 +61,8 @@ export class ServerlessService extends Http {
     }
 
     delete(url: string, options?: RequestOptionsArgs): Observable<Response> {
-        let uri = url.url.split("?")[0];
-        let query = url.url.split("?")[1];
+        let uri = url.split("?")[0];
+        let query = url.split("?")[1];
         let call = ServerlessConfig.calls[uri];
         if (call){
             return super.post(`${ServerlessConfig.platform}/run?${query}`,{code: call});
