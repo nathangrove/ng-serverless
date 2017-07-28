@@ -98,11 +98,15 @@ walk(rootPath, function(err, files) {
     let path = file.replace(rootPath,'').replace('index','').split('.')[0];
 
     let call = calls[path] || {};
+    call.active = true;
     call.code = fs.readFileSync(file).toString();
+    call.name = /\/\/NAME:(.*)/g.exec(call.code);
+    call.name = call.name ? call.name[1] : null;
+
 
     let hash = crypto.createHash('md5').update(call.code).digest("hex");
     if (call.hash == hash) {
-      console.log(`${path} unchanged. Skipping`);
+      console.log(`Unchanged: "${path}" Skipping`);
       calls[path] = call;
       completedCalls++;
       if (files.length == completedCalls) writeConfig();
@@ -111,13 +115,10 @@ walk(rootPath, function(err, files) {
       call.hash = hash;
     }
 
-    call.name = /\/\/NAME:(.*)/g.exec(call.code);
-    call.name = call.name ? call.name[1] : null;
-    call.active = true;
 
     // POST
     if (!calls[path]){
-      console.log("Creating call:",path);
+      console.log(`Creating call: "${path}"`);
       request.post(`${config.platform.url}/mycalls`,{ 
         auth: {
           user: config.platform.username,
@@ -127,12 +128,12 @@ walk(rootPath, function(err, files) {
       },(err,res,c) => {
 
         if (err) {
-          console.error("Error creating calls:",err);
+          console.error(`Error creating call "${path}": ${err}`);
           completedCalls++;
           if (files.length == completedCalls) writeConfig();
           return;
         } else if (!c.signature){
-          console.error(`Error creating call "${call.name}": ${JSON.stringify(c)}`);
+          console.error(`Error creating call "${path}": ${JSON.stringify(c)}`);
           completedCalls++;
           if (files.length == completedCalls) writeConfig();
           return;
@@ -151,7 +152,7 @@ walk(rootPath, function(err, files) {
 
     // PUT
     } else {
-      console.log("Updating call:",path);
+      console.log(`Updating call: "${path}"`);
       request.put(`${config.platform.url}/mycalls/${call.signature}`,{ 
         auth: {
           user: config.platform.username,
@@ -161,10 +162,19 @@ walk(rootPath, function(err, files) {
       },(err,res,c) => {
 
         if (err) {
-          console.error("Error updating calls:",err);
-          process.exit(1);
+          console.error(`Error updating call "${path}": ${err}`);
+          completedCalls++;
+          if (files.length == completedCalls) writeConfig();
+          return;
+        } else if (!c.signature){
+          console.error(`Error updating call "${path}": ${JSON.stringify(c)}`);
+          completedCalls++;
+          if (files.length == completedCalls) writeConfig();
+          return;
+        } else {
+          console.log(c);
         }
-        
+
         delete call.code;
         call.signature = c.signature;
         call.script = c.code;
